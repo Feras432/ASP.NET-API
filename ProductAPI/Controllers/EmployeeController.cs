@@ -16,15 +16,28 @@ namespace ProductAPI.Controllers
             _context = bankContext;
         }
 
-        [HttpPost]
-        public IActionResult AddEmployee(AddEmployee form)
+        [HttpGet]
+        public List<EmployeeResponse> GetAllEmployees()
+        {
+            return _context.Employees.Select(b => new EmployeeResponse
+            {
+                Name = b.Name,
+                CivilId = b.CivilId,
+                Position = b.Position,
+                
+            }).ToList();
+
+        }
+
+        [HttpPost("{id}")]
+        public IActionResult AddEmployee(int id, AddEmployee form)
         {
             var newEmployee = new Employee()
             {
                 Name = form.Name,
                 CivilId = form.CivilId,
                 Position = form.Position,
-                
+                BankBranch = _context.BankBranches.Find(id),
             };
             _context.Employees.Add(newEmployee);
             _context.SaveChanges();
