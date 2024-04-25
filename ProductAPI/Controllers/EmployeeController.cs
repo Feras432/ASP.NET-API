@@ -17,15 +17,9 @@ namespace ProductAPI.Controllers
         }
 
         [HttpGet]
-        public List<EmployeeResponse> GetAllEmployees()
+        public IEnumerable<Employee> GetAllEmployees()
         {
-            return _context.Employees.Select(b => new EmployeeResponse
-            {
-                Name = b.Name,
-                CivilId = b.CivilId,
-                Position = b.Position,
-                
-            }).ToList();
+            return _context.Employees; 
 
         }
 
