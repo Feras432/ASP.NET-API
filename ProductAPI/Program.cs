@@ -11,24 +11,36 @@ namespace ProductAPI
 
             builder.Services.AddDbContext<BankContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-            
+
+
+            //Adding Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
 
             // Add services to the container.
-
             builder.Services.AddControllers();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
 
+            // Adding Swagger 
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+
+            // Configure the HTTP request pipeline.
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-
+            
             app.MapControllers();
-
+            
             app.Run();
+
+           
+
+           
         }
     }
 }

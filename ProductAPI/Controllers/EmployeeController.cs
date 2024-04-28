@@ -63,7 +63,7 @@ namespace ProductAPI.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public ActionResult <EmployeeResponse> Details(int id) 
         {
             var employee = _context.Employees.Find(id);
