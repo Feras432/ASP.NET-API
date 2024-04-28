@@ -6,7 +6,7 @@ namespace ProductAPI.Models
     public class AddBankBranch : IValidatableObject
     {
         [Required]
-       public int Id { get; set; }
+        public int Id { get; set; }
         [Required]
         public string LocationName { get; set; }
         [Url]

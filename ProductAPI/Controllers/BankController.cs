@@ -1,4 +1,5 @@
 ﻿using Bank_Branches_Individual_Mini_Project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ namespace ProductAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BankController : ControllerBase
     {
         private readonly BankContext _context;
@@ -19,17 +21,35 @@ namespace ProductAPI.Controllers
 
 
         [HttpGet]
-        public List<BankBranchResponse> GetAll()
+        public PageListResult<BankBranchResponse> GetAll(int page = 1, string search = "")
         {
-            return _context.BankBranches.Select(b=> new BankBranchResponse
+           if (search == "")
+            {
+                return _context.BankBranches
+              .Select(b => new BankBranchResponse
+              {
+                  LocationName = b.LocationName,
+                  LocationURL = b.LocationURL,
+                  BranchManager = b.BranchManager,
+                  BranchName = b.BranchName,
+                  EmployeeCount = b.EmployeeCount,
+                  Id = b.Id
+
+              }).ToPageList(page, 1);
+            }
+            
+            return _context.BankBranches
+              .Where(r=> r.BranchName.StartsWith(search))
+              .Select(b=> new BankBranchResponse
             {
                 LocationName = b.LocationName,
                 LocationURL = b.LocationURL,
                 BranchManager = b.BranchManager,
                 BranchName = b.BranchName,
                 EmployeeCount = b.EmployeeCount,
+                Id = b.Id
 
-            }).ToList();
+            }).ToPageList(page, 1);
 
         }
         [HttpGet ("{id}")]
@@ -47,18 +67,22 @@ namespace ProductAPI.Controllers
                 BranchManager = bank.BranchManager,
                 BranchName = bank.BranchName,
                 EmployeeCount = bank.EmployeeCount,
+                Id = bank.Id,
                 Employees = bank.Employees.Select(r=> new EmployeeResponse 
                 {
                     Name = r.Name,
                     CivilId = r.CivilId,
                     Position = r.Position,
+                    Id = r.Id
                     
                 }).ToList(),
 
             }; 
             return Ok(response);
         }
+
         [HttpPost]
+        [Authorize]
         public IActionResult AddBranch(AddBankBranch req)
         {
             var newBank = new BankBranch()
@@ -68,6 +92,7 @@ namespace ProductAPI.Controllers
                 BranchManager = req.BranchManager,
                 BranchName = req.BranchName,
                 EmployeeCount = req.EmployeeCount,
+                Id = req.Id
             };
             _context.BankBranches.Add(newBank);
             _context.SaveChanges();
@@ -75,6 +100,7 @@ namespace ProductAPI.Controllers
             return Created(nameof(Details), new { Id = newBank.Id });
         }
         [HttpPatch("{id}")]
+        [Authorize]
         public IActionResult EditBranch(int id, AddBankBranch req)
         {
             var bank = _context.BankBranches.Find(id);
@@ -83,6 +109,7 @@ namespace ProductAPI.Controllers
             bank.BranchManager = req.BranchManager;
             bank.BranchName = req.BranchName;
             bank.EmployeeCount = req.EmployeeCount;
+            bank.Id = id;
   
             _context.SaveChanges();
 
@@ -90,6 +117,7 @@ namespace ProductAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public IActionResult DeleteBranch(int id)
         {
             var bank = _context.BankBranches.Find(id);

@@ -76,6 +76,7 @@ namespace ProductAPI.Controllers
                 Name = employee.Name,
                 CivilId = employee.CivilId,
                Position = employee.Position,
+               Id = employee.Id
 
             };
             return Ok(response);
