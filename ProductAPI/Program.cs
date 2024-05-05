@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProductAPI.Models;
 using System.Text;
 
 namespace ProductAPI
@@ -15,7 +16,7 @@ namespace ProductAPI
 
             builder.Services.AddDbContext<BankContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            builder.Services.AddScoped<TokenService>();
 
             //Adding Swagger
             builder.Services.AddEndpointsApiExplorer();
@@ -85,8 +86,9 @@ namespace ProductAPI
             app.UseHttpsRedirection();
 
             //API Security Step 3: In the Configure method of Startup.cs, add the authentication middleware
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+            
            
 
 

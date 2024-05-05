@@ -82,7 +82,7 @@ namespace ProductAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         public IActionResult AddBranch(AddBankBranch req)
         {
             var newBank = new BankBranch()
@@ -100,7 +100,7 @@ namespace ProductAPI.Controllers
             return Created(nameof(Details), new { Id = newBank.Id });
         }
         [HttpPatch("{id}")]
-        [Authorize(Roles = "admin")]
+        [Authorize]
         public IActionResult EditBranch(int id, AddBankBranch req)
         {
             var bank = _context.BankBranches.Find(id);
